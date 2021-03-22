@@ -3,6 +3,7 @@ const models = require('../models');
 
 // get the Cat model
 const Cat = models.Cat.CatModel;
+const Dog = models.Dog.DogModel;
 
 // default fake data so that we have something to work with until we make a real Cat
 const defaultData = {
@@ -112,6 +113,10 @@ const hostPage3 = (req, res) => {
     // actually calls index.jade. A second parameter of JSON can be passed
     // into the jade to be used as variables with #{varName}
   res.render('page3');
+};
+
+const hostPage4 = (req, res) => {
+  res.render('page4');
 };
 
 // function to handle get request to send the name
@@ -233,7 +238,61 @@ const updateLast = (req, res) => {
   // if save error, just return an error for now
   savePromise.catch((err) => res.status(500).json({ err }));
 };
+const setDog = (req, res) => {
+  if (!req.body.firstname || !req.body.lastname || !req.body.age || !req.body.breed) {
+    return res.status(400).json({ error: 'firstname,lastname, age, and breed are all required' });
+  }
 
+  const name = `${req.body.firstname} ${req.body.lastname}`;
+
+  const dogData = {
+    name,
+    age: req.body.age,
+    breed: req.body.breed
+  }
+
+  const newDog = new Dog(dogData);
+
+  const savePromise = newDog.save();
+
+  savePromise.then(() => {
+    res.json({
+      name: newDog.name,
+      breed: newDog.breed,
+      age: newDog.age,
+    });
+  });
+
+  savePromise.catch((err => {
+    res.status(500).json({ err });
+  }));
+
+  return res;
+};
+
+const updateDog = (req, res) => {
+  /*
+  if (!req.query.firstname) {
+    return res.status(400).json({ error: 'Name is required to perform a search' });
+  }
+  */
+
+  return Dog.findByName(req.query.name, (err, doc) => {
+    if (err) {
+      return res.status(500).json({ err });
+    }
+    if (!doc) {
+      return res.json({ error: 'No Cats Found!' });
+    }
+    doc.age++;
+    return res.json({
+      name: doc.name,
+      beds: doc.bedsOwned,
+    });
+  });
+
+  return res;
+};
 // function to handle a request to any non-real resources (404)
 // controller functions in Express receive the full HTTP request
 // and get a pre-filled out response object to send
@@ -255,10 +314,13 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+  page4: hostPage4,
   readCat,
   getName,
   setName,
   updateLast,
   searchName,
   notFound,
+  updateDog,
+  setDog,
 };

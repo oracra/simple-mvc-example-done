@@ -46,7 +46,6 @@ const readAllCats = (req, res, callback) => {
   Cat.find(callback).lean();
 };
 
-
 // function to find a specific cat on request.
 // Express functions always receive the request and the response.
 const readCat = (req, res) => {
@@ -106,12 +105,12 @@ const hostPage2 = (req, res) => {
 // controller functions in Express receive the full HTTP request
 // and a pre-filled out response object to send
 const hostPage3 = (req, res) => {
-    // res.render takes a name of a page to render.
-    // These must be in the folder you specified as views in your main app.js file
-    // Additionally, you don't need .jade because you registered the file type
-    // in the app.js as jade. Calling res.render('index')
-    // actually calls index.jade. A second parameter of JSON can be passed
-    // into the jade to be used as variables with #{varName}
+  // res.render takes a name of a page to render.
+  // These must be in the folder you specified as views in your main app.js file
+  // Additionally, you don't need .jade because you registered the file type
+  // in the app.js as jade. Calling res.render('index')
+  // actually calls index.jade. A second parameter of JSON can be passed
+  // into the jade to be used as variables with #{varName}
   res.render('page3');
 };
 
@@ -172,7 +171,6 @@ const setName = (req, res) => {
 
   return res;
 };
-
 
 // function to handle requests search for a name and return the object
 // controller functions in Express receive the full HTTP request
@@ -248,8 +246,8 @@ const setDog = (req, res) => {
   const dogData = {
     name,
     age: req.body.age,
-    breed: req.body.breed
-  }
+    breed: req.body.breed,
+  };
 
   const newDog = new Dog(dogData);
 
@@ -263,7 +261,7 @@ const setDog = (req, res) => {
     });
   });
 
-  savePromise.catch((err => {
+  savePromise.catch(((err) => {
     res.status(500).json({ err });
   }));
 
@@ -271,27 +269,25 @@ const setDog = (req, res) => {
 };
 
 const updateDog = (req, res) => {
-  /*
+/*
   if (!req.query.firstname) {
     return res.status(400).json({ error: 'Name is required to perform a search' });
   }
   */
 
-  return Dog.findByName(req.query.name, (err, doc) => {
+  Dog.findByName(req.query.name, (err, doc) => {
     if (err) {
       return res.status(500).json({ err });
     }
     if (!doc) {
       return res.json({ error: 'No Cats Found!' });
     }
-    doc.age++;
+
     return res.json({
       name: doc.name,
       beds: doc.bedsOwned,
     });
   });
-
-  return res;
 };
 // function to handle a request to any non-real resources (404)
 // controller functions in Express receive the full HTTP request
